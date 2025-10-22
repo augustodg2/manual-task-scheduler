@@ -24,7 +24,6 @@ const App: React.FC = () => {
     moveTaskToRunning,
     executeTick,
     updateBlockedTasks,
-    updateWaitingTimes,
     advanceGlobalTimeWhenEmpty,
     restartSimulation,
   } = useSchedulerStore();
@@ -47,27 +46,32 @@ const App: React.FC = () => {
     }
   }, [isPaused, isExecuting, executeTick]);
 
-  // Handle blocked tasks I/O completion
+  // Handle blocked tasks I/O completion - only when ready queue is empty (CPU idle)
   useEffect(() => {
-    if (!isPaused) {
+    // Advance kernel time and process I/O only when:
+    // 1. Ready queue is empty (CPU would be idle)
+    // 2. There are blocked tasks
+    // 3. No task is currently executing
+    // 4. System is not paused
+    if (
+      !isPaused &&
+      readyQueue.length === 0 &&
+      blockedTasks.length > 0 &&
+      !isExecuting
+    ) {
       const interval = setInterval(() => {
         updateBlockedTasks();
       }, 1000);
 
       return () => clearInterval(interval);
     }
-  }, [isPaused, updateBlockedTasks]);
-
-  // Handle waiting time updates
-  useEffect(() => {
-    if (!isPaused) {
-      const interval = setInterval(() => {
-        updateWaitingTimes();
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [isPaused, updateWaitingTimes]);
+  }, [
+    isPaused,
+    readyQueue.length,
+    blockedTasks.length,
+    isExecuting,
+    updateBlockedTasks,
+  ]);
 
   // Handle automatic global time advancement when no tasks are available
   useEffect(() => {
@@ -133,11 +137,6 @@ const App: React.FC = () => {
             Drag & Drop CPU Scheduling Simulation
           </p>
         </motion.div>
-
-        {/* Instructions Panel */}
-        <div className="mb-6">
-          <InstructionsPanel />
-        </div>
 
         {/* Global Metrics Panel */}
         <MetricsPanel />

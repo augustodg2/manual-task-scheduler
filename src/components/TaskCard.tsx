@@ -92,36 +92,39 @@ const TaskCard: React.FC<TaskCardProps> = ({
       </div>
 
       {/* Time Remaining - Most Prominent */}
+      <div className="text-xs opacity-75 text-center">Restante</div>
       <div className="text-3xl font-bold mb-3 text-center">
         {task.tempoRestante}
       </div>
       <div className="flex border-t border-white/30 items-start justify-between pt-3">
         {/* I/O Event Counter */}
-        <div>
-          <div className="text-xs opacity-75">I/O Event</div>
+
+        <div className="flex flex-col flex-1 text-center">
+          <div className="text-xs opacity-75">🔁 Execução</div>
           <div className="text-lg font-semibold text-center">
-            {task.eventoBloqueio}
+            {task.tempoExecucao || 0}
           </div>
         </div>
 
-        {task.state === "terminated" && (
-          <div>
-            <div className="text-xs opacity-75">🔁 Tempo de execução</div>
+        <div className="flex flex-col flex-1 text-center">
+          <div className="text-xs opacity-75">⏰ Espera</div>
+          <div className="text-lg font-semibold text-center">
+            {task.tempoEspera}
           </div>
-        )}
+        </div>
 
-        {task.state === "ready" && (
-          <div>
-            <div className="text-xs opacity-75">⏰ Tempo de espera</div>
+        {task.state === "running" && (
+          <div className="flex flex-col flex-1 text-center">
+            <div className="text-xs opacity-75">I/O Event</div>
             <div className="text-lg font-semibold text-center">
-              {task.tempoEspera}
+              {task.eventoBloqueio}
             </div>
           </div>
         )}
 
         {/* I/O Timer for blocked tasks */}
         {task.ioTimer !== undefined && (
-          <div>
+          <div className="flex flex-col flex-1 text-center">
             <div className="text-xs opacity-75">Timer E/S</div>
             <div className="text-lg font-semibold text-center">
               {task.ioTimer}

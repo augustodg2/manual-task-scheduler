@@ -4,6 +4,7 @@ export interface Task {
   prioridade: 1 | 2 | 3; // Low, Medium, High
   eventoBloqueio: number;
   tempoEspera: number; // NEW: Individual waiting time counter
+  tempoExecucao?: number; // Total execution time (CPU time)
   ioTimer?: number;
   quantumUsed?: number;
   state: TaskState;
@@ -19,6 +20,7 @@ export interface SimulationState {
   terminatedTasks: Task[];
   globalTime: number;
   contextSwitchTime: number;
+  cpuExecutionTime: number; // Time spent executing tasks (not idle)
   quantum: number;
   contextSwitchCost: number;
   isPaused: boolean;
@@ -29,5 +31,17 @@ export interface SimulationState {
 export interface Metrics {
   globalTime: number;
   contextSwitchTime: number;
+  cpuRunningTime: number;
+  cpuIdleTime: number;
   efficiency: number;
+  avgWaitingTimeByPriority: {
+    high: number;
+    medium: number;
+    low: number;
+  };
+  avgExecutingTimeByPriority: {
+    high: number;
+    medium: number;
+    low: number;
+  };
 }
